@@ -92,8 +92,7 @@ public abstract class AbstractMigrationManager implements MigrationManager {
         }
 
         in.close();
-        String content = buffer.toString().trim();
-        return content;
+        return buffer.toString().trim();
 
     }
 

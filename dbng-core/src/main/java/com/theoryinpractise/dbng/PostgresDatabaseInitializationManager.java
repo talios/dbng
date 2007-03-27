@@ -63,14 +63,12 @@ public class PostgresDatabaseInitializationManager implements DatabaseInitializa
     }
 
 
-    private BasicDataSource getConnection(String driver, String jdbcBase, String username, String password) throws ClassNotFoundException {
-        String templateUrl = jdbcBase;
-
+    private BasicDataSource getConnection(String driver, String url, String username, String password) throws ClassNotFoundException {
         Class.forName(driver);
 
         BasicDataSource ds = new BasicDataSource();
         ds.setDriverClassName(driver);
-        ds.setUrl(templateUrl);
+        ds.setUrl(url);
         ds.setUsername(username);
         ds.setPassword(password);
 

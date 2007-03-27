@@ -120,6 +120,7 @@ public class AnnotationMigrationManager extends AbstractMigrationManager {
      * migrations don't skip, or duplicate any version numbers.
      *
      * @param migrationContainers
+     * @throws MigrationException
      */
     private void checkContiguousMigrations(Set<MethodMigrationContainer> migrationContainers) throws MigrationException {
         long currentVersion = getCurrentVersion();
