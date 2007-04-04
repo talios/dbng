@@ -57,7 +57,7 @@ public class PostgresDatabaseInitializationManager implements DatabaseInitializa
 
             return migrationManager;
         } catch (ClassNotFoundException e) {
-            throw new SQLException(e);
+            throw new SQLException(e.toString());
         }
 
     }
