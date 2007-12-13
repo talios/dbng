@@ -1,5 +1,6 @@
 package com.theoryinpractise.dbng;
 
+import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
@@ -24,7 +25,7 @@ public interface MigrationManager {
 
     Object query(String s, Object[] objects, ResultSetExtractor resultSetExtractor) throws DataAccessException;
 
-    long getCurrentVersion();
+    ArtifactVersion getCurrentVersion();
 
     DataSource getDataSource();
 

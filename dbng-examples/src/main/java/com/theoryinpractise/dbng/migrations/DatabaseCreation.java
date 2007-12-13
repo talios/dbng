@@ -12,7 +12,7 @@ import java.io.IOException;
 public class DatabaseCreation {
     private static final Logger LOG = Logger.getLogger(DatabaseCreation.class);
 
-    @DataMigration(groupId = "com.theoryinpractise.dbng", artifactId = "dbng-examples", version = 0)
+    @DataMigration(groupId = "com.theoryinpractise.dbng", artifactId = "dbng-examples", version = "0.0.0")
     public void updateForSomething(MigrationManager manager) throws IOException {
         LOG.info("Creating initial database schema");
 

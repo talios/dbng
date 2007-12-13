@@ -3,7 +3,7 @@ package com.theoryinpractise.dbng;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
-
+import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import javax.sql.DataSource;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -41,12 +41,16 @@ public class AnnotationMigrationManager extends AbstractMigrationManager {
 
         final Set<MethodMigrationContainer> migrationContainers = new TreeSet<MethodMigrationContainer>(new Comparator<MethodMigrationContainer>() {
             public int compare(MethodMigrationContainer m1, MethodMigrationContainer m2) {
-                return new Long(m1.getDataMigration().version()).compareTo(m2.getDataMigration().version());
+
+                DefaultArtifactVersion v1 = new DefaultArtifactVersion(m1.getDataMigration().version());
+                DefaultArtifactVersion v2 = new DefaultArtifactVersion(m2.getDataMigration().version());
+
+                return v1.compareTo(v2);
             }
         });
 
         // Find current version number
-        final long initialVersion = jdbcTemplate.queryForLong("SELECT version FROM version");
+        final DefaultArtifactVersion initialVersion = new DefaultArtifactVersion((String) jdbcTemplate.queryForObject("SELECT version FROM version", String.class));
 
         final Map<Class, Object> instances = new HashMap<Class, Object>();
 
@@ -54,7 +58,9 @@ public class AnnotationMigrationManager extends AbstractMigrationManager {
             for (Method classMethod : aClass.getMethods()) {
                 if (classMethod.isAnnotationPresent(DataMigration.class)) {
                     DataMigration dataMigration = classMethod.getAnnotation(DataMigration.class);
-                    if (groupId.equals(dataMigration.groupId()) && artifactId.equals(dataMigration.artifactId()) && initialVersion < dataMigration.version()) {
+                    DefaultArtifactVersion dataMigrationVersion = new DefaultArtifactVersion(dataMigration.version());
+
+                    if (groupId.equals(dataMigration.groupId()) && artifactId.equals(dataMigration.artifactId()) && initialVersion.compareTo(dataMigrationVersion) == -1) {
                         try {
                             if (!instances.containsKey(aClass)) {
                                 instances.put(aClass, aClass.newInstance());
@@ -78,14 +84,14 @@ public class AnnotationMigrationManager extends AbstractMigrationManager {
             }
         }
 
-        checkContiguousMigrations(migrationContainers);
+        // checkContiguousMigrations(migrationContainers);
 
         LOG.info("Current database version is " + initialVersion + ", found " + migrationContainers.size() + " migrations to process.");
 
-        Long newVersion = (Long) transactionTemplate.execute(new TransactionCallback() {
+        String newVersion = (String) transactionTemplate.execute(new TransactionCallback() {
             public Object doInTransaction(TransactionStatus transactionStatus) {
 
-                long currentVersion = initialVersion;
+                String currentVersion = initialVersion.toString();
 
                 try {
                     for (MethodMigrationContainer container : migrationContainers) {
@@ -122,7 +128,7 @@ public class AnnotationMigrationManager extends AbstractMigrationManager {
      * @param migrationContainers
      * @throws MigrationException
      */
-    private void checkContiguousMigrations(Set<MethodMigrationContainer> migrationContainers) throws MigrationException {
+/*    private void checkContiguousMigrations(Set<MethodMigrationContainer> migrationContainers) throws MigrationException {
         long currentVersion = getCurrentVersion();
         System.out.println("checking " + migrationContainers.size() + " migrations");
         for (MethodMigrationContainer migrationContainer : migrationContainers) {
@@ -135,6 +141,7 @@ public class AnnotationMigrationManager extends AbstractMigrationManager {
             }
         }
     }
+*/
 
     public class MethodMigrationContainer {
         private Class clazz;

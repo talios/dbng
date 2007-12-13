@@ -5,7 +5,7 @@ import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DataMigration {
-    long version();
+    String version();
 
     String groupId();
 

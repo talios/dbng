@@ -2,6 +2,7 @@ package com.theoryinpractise.dbng;
 
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.log4j.Logger;
+import org.postgresql.Driver;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -51,7 +52,7 @@ public class PostgresDatabaseInitializationManager implements DatabaseInitializa
             );
 
 
-            migrationManager.update("CREATE TABLE version ( version integer, migration_date timestamp )");
+            migrationManager.update("CREATE TABLE version ( version text, migration_date timestamp )");
             migrationManager.update("INSERT INTO version VALUES (?, ?)", new Object[]{0, new Date()});
 
 

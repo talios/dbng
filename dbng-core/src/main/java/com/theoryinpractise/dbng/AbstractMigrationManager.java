@@ -1,6 +1,8 @@
 package com.theoryinpractise.dbng;
 
 import org.apache.log4j.Logger;
+import org.apache.maven.artifact.versioning.ArtifactVersion;
+import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -53,8 +55,8 @@ public abstract class AbstractMigrationManager implements MigrationManager {
         return jdbcTemplate.query(s, objects, resultSetExtractor);
     }
 
-    public long getCurrentVersion() {
-        return jdbcTemplate.queryForLong("SELECT version FROM version");
+    public ArtifactVersion getCurrentVersion() {
+        return new DefaultArtifactVersion((String) jdbcTemplate.queryForObject("SELECT version FROM version", String.class));
     }
 
     public DataSource getDataSource() {
