@@ -27,8 +27,7 @@ public class TestDatabaseCreation {
     }
 
     @BeforeMethod
-    public void createFreshDatabase() throws java.lang.InterruptedException, SQLException {
-	Thread.sleep(60000);
+    public void createFreshDatabase() throws MigrationException {
 
         migrationManager = DatabaseInitializationManagerFactory
                 .getInstance(DB_ENGINE)

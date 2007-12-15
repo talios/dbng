@@ -19,7 +19,7 @@ public class PostgresDatabaseInitializationManager implements DatabaseInitializa
     private static final Logger LOG = Logger.getLogger(PostgresDatabaseInitializationManager.class);
 
 
-    public MigrationManager createDatabase(String dbname, String hostname, String username, String password) throws SQLException {
+    public MigrationManager createDatabase(String dbname, String hostname, String username, String password) throws MigrationException {
 
 
         String driver = "org.postgresql.Driver";
@@ -57,8 +57,10 @@ public class PostgresDatabaseInitializationManager implements DatabaseInitializa
 
 
             return migrationManager;
+        } catch (SQLException e) {
+            throw new MigrationException(e.toString());
         } catch (ClassNotFoundException e) {
-            throw new SQLException(e.toString());
+            throw new MigrationException(e.toString());
         }
 
     }

@@ -88,6 +88,8 @@ public class AnnotationMigrationManager extends AbstractMigrationManager {
 
         LOG.info("Current database version is " + initialVersion + ", found " + migrationContainers.size() + " migrations to process.");
 
+        final String[] rollBackReason = new String[1];
+
         String newVersion = (String) transactionTemplate.execute(new TransactionCallback() {
             public Object doInTransaction(TransactionStatus transactionStatus) {
 
@@ -107,13 +109,14 @@ public class AnnotationMigrationManager extends AbstractMigrationManager {
                 } catch (Exception e) {
                     LOG.warn("Data migration failed - all migrations will be rolled back", e);
                     transactionStatus.setRollbackOnly();
+                    rollBackReason[0] = e.getCause().getMessage();
                     return null;
                 }
             }
         });
 
         if (newVersion == null) {
-            throw new MigrationException("Transaction was rolled back due to errors");
+            throw new MigrationException("Transaction was rolled back due to errors: " + rollBackReason[0]);
         } else {
             LOG.info("Migration complete, database version is now: " + newVersion);
         }

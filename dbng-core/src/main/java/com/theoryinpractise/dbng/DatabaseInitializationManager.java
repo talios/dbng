@@ -10,5 +10,5 @@ import java.sql.SQLException;
  * To change this template use File | Settings | File Templates.
  */
 public interface DatabaseInitializationManager {
-    MigrationManager createDatabase(String dbname, String hostname, String username, String password) throws SQLException;
+    MigrationManager createDatabase(String dbname, String hostname, String username, String password) throws MigrationException;
 }
