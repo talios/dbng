@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <name>Database Migration Services</name>
     <url>http://code.google.com/p/dbng/w/list</url>
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.theoryinpractise.dbng</groupId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <artifactId>dbng</artifactId>
     <packaging>pom</packaging>
 
     <scm>
-        <developerConnection>scm:svn:https://dbng.googlecode.com/svn/trunk</developerConnection>
+        <developerConnection>scm:svn:https://dbng.googlecode.com/svn/tags/dbng-1.0</developerConnection>
     </scm>
 
     <modules>
