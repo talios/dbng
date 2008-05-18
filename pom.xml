@@ -9,6 +9,10 @@
     <artifactId>dbng</artifactId>
     <packaging>pom</packaging>
 
+    <scm>
+        <developerConnection>scm:svn:https://dbng.googlecode.com/svn/trunk</developerConnection>
+    </scm>
+
     <modules>
         <module>dbng-core</module>
         <module>dbng-examples</module>
