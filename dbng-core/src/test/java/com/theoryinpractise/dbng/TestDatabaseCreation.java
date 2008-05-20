@@ -33,7 +33,7 @@ public class TestDatabaseCreation {
                 .getInstance(DB_ENGINE)
                 .createDatabase(DB_NAME, "", DB_USERNAME, DB_PASSWORD);
 
-        ArtifactVersion currentVersion = migrationManager.getCurrentVersion();
+        ArtifactVersion currentVersion = migrationManager.getCurrentVersion("com.theoryinpractise.dbng", "test1");
         assert currentVersion.getMajorVersion() == 0 : "A Fresh Database should have a major version of 0, found: " + currentVersion;
         assert currentVersion.getMinorVersion() == 0 : "A Fresh Database should have a minor version of 0, found: " + currentVersion;
     }
@@ -51,32 +51,32 @@ public class TestDatabaseCreation {
     @Test
     public void testTableCreation() throws SQLException, MigrationException {
 
-        ArtifactVersion currentVersion = migrationManager.getCurrentVersion();
+        ArtifactVersion currentVersion = migrationManager.getCurrentVersion("com.theoryinpractise.dbng", "test1");
         assert currentVersion.getMajorVersion() == 0 : "A Fresh Database should have a version of 0, found: " + currentVersion;
 
         migrationManager.processMigrations("com.theoryinpractise.dbng", "test1", "com.theoryinpractise.*");
 
-        currentVersion = migrationManager.getCurrentVersion();
+        currentVersion = migrationManager.getCurrentVersion("com.theoryinpractise.dbng", "test1");
         assert currentVersion.getMajorVersion() == 1 : "A clean database with test1 migrations should be at version 1, found: " + currentVersion;
 
     }
 
-    @Test(groups={"foo"}, invocationCount = 1)
+    @Test(groups = {"foo"}, invocationCount = 1)
     public void testRepeatingMigrations() throws SQLException, MigrationException {
 
-        ArtifactVersion currentVersion = migrationManager.getCurrentVersion();
+        ArtifactVersion currentVersion = migrationManager.getCurrentVersion("com.theoryinpractise.dbng", "test1");
         assert currentVersion.getMajorVersion() == 0 : "A Fresh Database should have a version of 0, found: " + currentVersion;
 
         migrationManager.processMigrations("com.theoryinpractise.dbng", "test1", "com.theoryinpractise.*");
 
-        currentVersion = migrationManager.getCurrentVersion();
+        currentVersion = migrationManager.getCurrentVersion("com.theoryinpractise.dbng", "test1");
         assert currentVersion.getMajorVersion() == 1 : "A clean database with test1 migrations should be at version 1, found: " + currentVersion;
         assert currentVersion.getIncrementalVersion() == 0 : "A clean database with test1 migrations should be at version 1, found: " + currentVersion;
 
         // Run the migrations again... shouldn't cause any problems as the existing migrations should be skipped
         migrationManager.processMigrations("com.theoryinpractise.dbng", "test1", "com.theoryinpractise.*");
 
-        currentVersion = migrationManager.getCurrentVersion();
+        currentVersion = migrationManager.getCurrentVersion("com.theoryinpractise.dbng", "test1");
         assert currentVersion.getMajorVersion() == 1 : "A database with test1 migrations should be at version 1 regardless of how often the migrations are run, found: " + currentVersion;
         assert currentVersion.getIncrementalVersion() == 0 : "A database with test1 migrations should be at version 1 regardless of how often the migrations are run, found: " + currentVersion;
     }

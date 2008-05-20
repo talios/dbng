@@ -14,6 +14,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -35,8 +38,6 @@ public abstract class AbstractMigrationManager implements MigrationManager {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
         this.transactionTemplate = new TransactionTemplate(
                 new DataSourceTransactionManager(dataSource));
-
-
     }
 
     public int update(String string) throws DataAccessException {
@@ -55,8 +56,21 @@ public abstract class AbstractMigrationManager implements MigrationManager {
         return jdbcTemplate.query(s, objects, resultSetExtractor);
     }
 
-    public ArtifactVersion getCurrentVersion() {
-        return new DefaultArtifactVersion((String) jdbcTemplate.queryForObject("SELECT version FROM version", String.class));
+    public ArtifactVersion getCurrentVersion(String groupId, String artifactId) {
+        List<String> versionNumbers = jdbcTemplate.queryForList(
+                "SELECT version FROM version WHERE group_id = ? AND artifact_id = ?",
+                new Object[]{groupId, artifactId}, String.class);
+
+        List<ArtifactVersion> versions = new ArrayList<ArtifactVersion>();
+        for (String versionNumber : versionNumbers) {
+            versions.add(new DefaultArtifactVersion(versionNumber));
+        }
+
+        Collections.sort(versions);
+
+        return versions.isEmpty()
+                ? new DefaultArtifactVersion("0")
+                : versions.get(versions.size() - 1);
     }
 
     public DataSource getDataSource() {
@@ -95,7 +109,6 @@ public abstract class AbstractMigrationManager implements MigrationManager {
 
         in.close();
         return buffer.toString().trim();
-
     }
 
     public void info(String string) {

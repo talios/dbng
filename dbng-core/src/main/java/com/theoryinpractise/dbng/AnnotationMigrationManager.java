@@ -1,9 +1,11 @@
 package com.theoryinpractise.dbng;
 
 import org.apache.log4j.Logger;
+import org.apache.maven.artifact.versioning.ArtifactVersion;
+import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
-import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
+
 import javax.sql.DataSource;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -50,7 +52,7 @@ public class AnnotationMigrationManager extends AbstractMigrationManager {
         });
 
         // Find current version number
-        final DefaultArtifactVersion initialVersion = new DefaultArtifactVersion((String) jdbcTemplate.queryForObject("SELECT version FROM version", String.class));
+        final ArtifactVersion initialVersion = getCurrentVersion(groupId, artifactId);
 
         final Map<Class, Object> instances = new HashMap<Class, Object>();
 
@@ -102,7 +104,8 @@ public class AnnotationMigrationManager extends AbstractMigrationManager {
                         Object o = instances.get(container.getClazz());
                         container.getMethod().invoke(o, AnnotationMigrationManager.this);
                         currentVersion = container.getDataMigration().version();
-                        jdbcTemplate.update("UPDATE version SET version = ?, migration_date = ?", new Object[]{currentVersion, new Date()});
+                        jdbcTemplate.update("INSERT INTO version (group_id, artifact_id, version, migration_date) VALUES (?, ?, ?, ?)",
+                                new Object[]{groupId, artifactId, currentVersion, new Date()});
                     }
 
                     return currentVersion;

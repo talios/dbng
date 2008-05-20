@@ -25,7 +25,7 @@ public interface MigrationManager {
 
     Object query(String s, Object[] objects, ResultSetExtractor resultSetExtractor) throws DataAccessException;
 
-    ArtifactVersion getCurrentVersion();
+    ArtifactVersion getCurrentVersion(String groupId, String artifactId);
 
     DataSource getDataSource();
 
