@@ -5,6 +5,7 @@ import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
+import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -15,6 +16,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -80,19 +83,30 @@ public abstract class AbstractMigrationManager implements MigrationManager {
 
     public abstract MigrationManager processMigrations(String groupId, String artifactId, String initialPackage) throws MigrationException;
 
-    public MigrationManager executeSqlFile(InputStream inputStream) throws DataAccessException, IOException {
-
-        processStreamByLine(inputStream, new LineReader() {
-            public void run(int lineNumber, String line) {
+    public MigrationManager executeSqlFile(final InputStream inputStream) throws DataAccessException {
+        jdbcTemplate.execute(new ConnectionCallback() {
+            public Object doInConnection(final Connection con) {
                 try {
-                    jdbcTemplate.update(line);
-                } catch (Exception e) {
-                    throw new InvalidDataAccessResourceUsageException("Error on line " + lineNumber + ": " + e.getMessage());
+                    boolean autoCommit = con.getAutoCommit();
+                    con.setAutoCommit(false);
+                    processStreamByLine(inputStream, new LineReader() {
+                        public void run(int lineNumber, String line) {
+                            try {
+                                con.prepareStatement(line).execute();
+                            } catch (Exception e) {
+                                throw new InvalidDataAccessResourceUsageException("Error on line " + lineNumber + ": " + e.getMessage());
+                            }
+                        }
+                    });
+                    con.setAutoCommit(autoCommit);
+                    return null;
+                } catch (IOException e) {
+                    throw new InvalidDataAccessResourceUsageException(e.getMessage());
+                } catch (SQLException e) {
+                    throw new InvalidDataAccessResourceUsageException(e.getMessage());
                 }
             }
         });
-
-
         return this;
     }
 
