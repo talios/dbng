@@ -4,16 +4,17 @@ import org.apache.log4j.Logger;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.sql.DataSource;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.LineNumberReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -81,34 +82,57 @@ public abstract class AbstractMigrationManager implements MigrationManager {
 
     public MigrationManager executeSqlFile(InputStream inputStream) throws DataAccessException, IOException {
 
-        String schemaSql = getStreamAsString(inputStream);
+        processStreamByLine(inputStream, new LineReader() {
+            public void run(int lineNumber, String line) {
+                try {
+                    jdbcTemplate.update(line);
+                } catch (Exception e) {
+                    throw new InvalidDataAccessResourceUsageException("Error on line " + lineNumber + ": " + e.getMessage());
+                }
+            }
+        });
 
-        String[] schemaStatements = schemaSql.split(";");
-
-        for (String schemaStatement : schemaStatements) {
-            jdbcTemplate.update(schemaStatement);
-        }
 
         return this;
     }
 
-    private String getStreamAsString(InputStream is) throws IOException {
+    private interface LineReader {
+        void run(int lineNumber, String line);
+    }
+
+    private void processStreamByLine(InputStream is, LineReader runner) throws IOException {
         if (is == null) {
             throw new IllegalArgumentException("InputStream should not be null");
         }
 
-        BufferedReader in = new BufferedReader(new InputStreamReader(is));
+        LineNumberReader in = new LineNumberReader(new InputStreamReader(is));
 
         String inputLine;
+        int startingLineNumber = 1;
         StringBuilder buffer = new StringBuilder();
 
         while ((inputLine = in.readLine()) != null) {
-            buffer.append(inputLine);
-            buffer.append("\n");
+            if (!inputLine.startsWith("--") && !"".equals(inputLine.trim())) {
+
+                if (buffer.length() == 0) {
+                    startingLineNumber = in.getLineNumber();
+                }
+
+                buffer.append(inputLine);
+                buffer.append("\n");
+
+            }
+
+            if (buffer.toString().trim().endsWith(";")) {
+                runner.run(startingLineNumber, buffer.toString().trim());
+                buffer = new StringBuilder();
+            }
+
         }
 
+        runner.run(startingLineNumber, buffer.toString().trim());
         in.close();
-        return buffer.toString().trim();
+
     }
 
     public void info(String string) {

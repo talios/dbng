@@ -8,6 +8,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 
+import java.io.IOException;
 import java.sql.SQLException;
 
 public class TestDatabaseCreation {
@@ -46,6 +47,12 @@ public class TestDatabaseCreation {
     @DataMigration(groupId = "com.theoryinpractise.dbng", artifactId = "test1", version = "1.0.0")
     public void createUsersTable(MigrationManager m) {
         m.update("CREATE TABLE users (id serial, username varchar(256))");
+    }
+
+
+    @Test
+    public void testSqlFileExecution() throws SQLException, MigrationException, IOException {
+        migrationManager.executeSqlFile(TestDatabaseCreation.class.getResourceAsStream("/testschema.sql"));
     }
 
     @Test
