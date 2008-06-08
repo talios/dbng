@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.File;
 
 /**
  * Created by IntelliJ IDEA.
@@ -30,6 +31,10 @@ public interface MigrationManager {
     DataSource getDataSource();
 
     MigrationManager executeSqlFile(InputStream inputStream) throws DataAccessException, IOException;
+
+    MigrationManager executeSqlFile(String id, InputStream inputStream) throws DataAccessException, IOException;
+
+    MigrationManager executeSqlFile(File file) throws DataAccessException, IOException;
 
     MigrationManager processMigrations(final String groupId, final String artifactId, final String initialPackage) throws MigrationException;
 

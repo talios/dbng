@@ -18,12 +18,22 @@ public class PostgresDatabaseInitializationManager implements DatabaseInitializa
 
 
     public MigrationManager createDatabase(String dbname, String hostname, String username, String password) throws MigrationException {
+        return createDatabase(dbname, hostname, null, username, password);
+    }
+
+    public MigrationManager createDatabase(String dbname, String hostname, Integer port, String username, String password) throws MigrationException {
 
 
         String driver = "org.postgresql.Driver";
         String url = "jdbc:postgresql:";
         if (hostname != null && !"".equals(hostname)) {
-            url += "//" + hostname + "/";
+            url += "//" + hostname;
+
+            if (port != null) {
+                url += ":" + port;
+            }
+
+            url += "/";
         }
 
 
@@ -32,10 +42,10 @@ public class PostgresDatabaseInitializationManager implements DatabaseInitializa
             BasicDataSource ds = getConnection(driver, url + "template1", username, password);
             Connection conn = ds.getConnection();
             try {
-                LOG.info("Creating integration testing database...");
+                LOG.info("Creating integration testing database " + dbname + "...");
                 conn.prepareStatement("CREATE DATABASE " + dbname + " WITH ENCODING 'UTF-8'").executeUpdate();
             } catch (SQLException e) {
-                LOG.info("Database exists, dropping and recreating...");
+                LOG.info("Database exists, dropping and recreating " + dbname + "...");
 
                 conn.prepareStatement("DROP DATABASE " + dbname).executeUpdate();
                 conn.prepareStatement("CREATE DATABASE " + dbname + " WITH ENCODING 'UTF-8'").executeUpdate();

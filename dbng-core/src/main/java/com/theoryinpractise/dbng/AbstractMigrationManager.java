@@ -12,10 +12,7 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.sql.DataSource;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.LineNumberReader;
+import java.io.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -83,7 +80,19 @@ public abstract class AbstractMigrationManager implements MigrationManager {
 
     public abstract MigrationManager processMigrations(String groupId, String artifactId, String initialPackage) throws MigrationException;
 
+    public MigrationManager executeSqlFile(final File file) throws DataAccessException {
+        try {
+            return executeSqlFile(file.getName(), new FileInputStream(file));
+        } catch (FileNotFoundException e) {
+            throw new InvalidDataAccessResourceUsageException(e.getMessage());
+        }
+    }
+
     public MigrationManager executeSqlFile(final InputStream inputStream) throws DataAccessException {
+        return executeSqlFile("unknown", inputStream);
+    }
+
+    public MigrationManager executeSqlFile(final String id, final InputStream inputStream) throws DataAccessException {
         jdbcTemplate.execute(new ConnectionCallback() {
             public Object doInConnection(final Connection con) {
                 try {
@@ -94,7 +103,7 @@ public abstract class AbstractMigrationManager implements MigrationManager {
                             try {
                                 con.prepareStatement(line).execute();
                             } catch (Exception e) {
-                                throw new InvalidDataAccessResourceUsageException("Error on line " + lineNumber + ": " + e.getMessage());
+                                throw new InvalidDataAccessResourceUsageException(id + ":" + lineNumber + ": " + e.getMessage());
                             }
                         }
                     });

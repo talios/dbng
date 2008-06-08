@@ -11,4 +11,5 @@ import java.sql.SQLException;
  */
 public interface DatabaseInitializationManager {
     MigrationManager createDatabase(String dbname, String hostname, String username, String password) throws MigrationException;
+    MigrationManager createDatabase(String dbname, String hostname, Integer port, String username, String password) throws MigrationException;
 }
