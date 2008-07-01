@@ -105,7 +105,7 @@ public class AnnotationMigrationManager extends AbstractMigrationManager {
                         Object o = instances.get(container.getClazz());
                         container.getMethod().invoke(o, AnnotationMigrationManager.this);
                         currentVersion = container.getDataMigration().version();
-                        jdbcTemplate.update("INSERT INTO version (group_id, artifact_id, version, migration_date) VALUES (?, ?, ?, ?)",
+                        jdbcTemplate.update("INSERT INTO public.version (group_id, artifact_id, version, migration_date) VALUES (?, ?, ?, ?)",
                                 new Object[]{groupId, artifactId, currentVersion, new Date()});
                     }
 
