@@ -59,7 +59,7 @@ public abstract class AbstractMigrationManager implements MigrationManager {
 
     public ArtifactVersion getCurrentVersion(String groupId, String artifactId) {
         List<String> versionNumbers = jdbcTemplate.queryForList(
-                "SELECT version FROM version WHERE group_id = ? AND artifact_id = ?",
+                "SELECT version FROM public.version WHERE group_id = ? AND artifact_id = ?",
                 new Object[]{groupId, artifactId}, String.class);
 
         List<ArtifactVersion> versions = new ArrayList<ArtifactVersion>();

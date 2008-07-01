@@ -32,7 +32,7 @@ public class TestDatabaseCreation {
 
         migrationManager = DatabaseInitializationManagerFactory
                 .getInstance(DB_ENGINE)
-                .createDatabase(DB_NAME, "localhost", 5433, DB_USERNAME, DB_PASSWORD);
+                .createDatabase(DB_NAME, "localhost", 5432, DB_USERNAME, DB_PASSWORD);
 
         ArtifactVersion currentVersion = migrationManager.getCurrentVersion("com.theoryinpractise.dbng", "test1");
         assert currentVersion.getMajorVersion() == 0 : "A Fresh Database should have a major version of 0, found: " + currentVersion;

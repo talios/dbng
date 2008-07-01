@@ -26,6 +26,7 @@ public class AnnotationMigrationManager extends AbstractMigrationManager {
 
     public MigrationManager processMigrations(final String groupId, final String artifactId, final String initialPackage) throws MigrationException {
 
+        LOG.info("Processing migrations for " + groupId + ":" + artifactId + " from packages under " + initialPackage);
         Set<Class> classes = ClassWalker.findMigrationClassesInPackage(initialPackage, new ClassWalkerAcceptor() {
             public boolean accept(Class classInstance) {
                 for (Method classMethod : classInstance.getMethods()) {
@@ -62,7 +63,7 @@ public class AnnotationMigrationManager extends AbstractMigrationManager {
                     DataMigration dataMigration = classMethod.getAnnotation(DataMigration.class);
                     DefaultArtifactVersion dataMigrationVersion = new DefaultArtifactVersion(dataMigration.version());
 
-                    if (groupId.equals(dataMigration.groupId()) && artifactId.equals(dataMigration.artifactId()) && initialVersion.compareTo(dataMigrationVersion) == -1) {
+                    if (groupId.equals(dataMigration.groupId()) && artifactId.equals(dataMigration.artifactId()) && initialVersion.compareTo(dataMigrationVersion) < 0) {
                         try {
                             if (!instances.containsKey(aClass)) {
                                 instances.put(aClass, aClass.newInstance());
