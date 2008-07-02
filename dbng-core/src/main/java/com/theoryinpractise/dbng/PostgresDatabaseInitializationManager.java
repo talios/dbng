@@ -5,6 +5,8 @@ import org.apache.log4j.Logger;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.ResultSet;
+import java.sql.PreparedStatement;
 
 /**
  * Created by IntelliJ IDEA.
@@ -45,8 +47,17 @@ public class PostgresDatabaseInitializationManager implements DatabaseInitializa
                 LOG.info("Creating integration testing database " + dbname + "...");
                 conn.prepareStatement("CREATE DATABASE " + dbname + " WITH ENCODING 'UTF-8'").executeUpdate();
             } catch (SQLException e) {
-                LOG.info("Database exists, dropping and recreating " + dbname + "...");
+                // Rollback any struck transactions
+                PreparedStatement statement = conn.prepareStatement("SELECT gid FROM pg_prepared_xacts WHERE database = ?");
+                statement.setString(1, dbname);                    
+                ResultSet transactions = statement.executeQuery();
+                while (transactions.next()) {
+                    String gid = transactions.getString("gid");
+                    LOG.info("Rolling back transaction " + gid);
+                    conn.prepareStatement("ROLLBACK PREPARED '" + gid + "'").executeUpdate();
+                }
 
+                LOG.info("Database exists, dropping and recreating " + dbname + "...");
                 conn.prepareStatement("DROP DATABASE " + dbname).executeUpdate();
                 conn.prepareStatement("CREATE DATABASE " + dbname + " WITH ENCODING 'UTF-8'").executeUpdate();
             } finally {
