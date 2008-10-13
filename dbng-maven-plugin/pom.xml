@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<project>
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>dbng</artifactId>
+        <groupId>com.theoryinpractise.dbng</groupId>
+        <version>1.1-SNAPSHOT</version>
+    </parent>
+    <groupId>com.theoryinpractise.dbng</groupId>
+    <artifactId>dbng-maven-plugin</artifactId>
+    <name>dbng-maven-plugin</name>
+    <packaging>maven-plugin</packaging>
+    <url>http://maven.apache.org</url>
+    <!--<build>-->
+       <!--<plugins>-->
+         <!--<plugin>-->
+           <!--<groupId>org.apache.maven.plugins</groupId>-->
+           <!--<artifactId>maven-plugin-plugin</artifactId>-->
+           <!--<version>2.4.3</version>-->
+           <!--<configuration>-->
+             <!--<goalPrefix>plugin</goalPrefix>-->
+             <!--<outputDirectory>${basedir}/target/dir</outputDirectory>-->
+           <!--</configuration>-->
+         <!--</plugin>-->
+       <!--</plugins>-->
+     <!--</build>-->
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-plugin-api</artifactId>
+            <version>2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.theoryinpractise.dbng</groupId>
+            <artifactId>dbng-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+</project>

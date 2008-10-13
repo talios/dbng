@@ -15,8 +15,9 @@
 
     <modules>
         <module>dbng-core</module>
+        <module>dbng-maven-plugin</module>
         <module>dbng-examples</module>
-    </modules>
+  </modules>
 
     <repositories>
         <repository>

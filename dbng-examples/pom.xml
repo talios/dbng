@@ -10,6 +10,28 @@
     <artifactId>dbng-examples</artifactId>
     <name>dbng-examples</name>
     <url>http://maven.apache.org</url>
+    
+	<build>
+	    <plugins>
+    		<plugin>
+    			<groupId>com.theoryinpractise.dbng</groupId>
+  		  		<artifactId>dbng-maven-plugin</artifactId>
+    			<version>1.1-SNAPSHOT</version>
+	  		  	<configuration>
+  			  		<createDatabase>true</createDatabase>
+  			  		<username>postgres</username>
+  			  		<password>8avana</password>
+<!-- 
+					<files>
+  			  			<file>src/main/resources/test.sql</file>
+  			  		</files>
+-->
+  			  	</configuration>
+  		  	</plugin>
+  		  
+    	</plugins>
+	</build>
+	
     <dependencies>
         <dependency>
             <groupId>com.theoryinpractise.dbng</groupId>
