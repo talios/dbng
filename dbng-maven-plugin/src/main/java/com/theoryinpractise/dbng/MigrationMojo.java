@@ -2,10 +2,16 @@ package com.theoryinpractise.dbng;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.codehaus.classworlds.ClassWorld;
+import org.codehaus.classworlds.DuplicateRealmException;
+import org.codehaus.classworlds.ClassRealm;
 
 import java.io.File;
 import java.io.IOException;
 import static java.text.MessageFormat.format;
+import java.util.Iterator;
+import java.net.URL;
+import java.net.MalformedURLException;
 
 /**
  * Creates and migrates a database through a series of sql files, or migration classes
@@ -95,19 +101,25 @@ public class MigrationMojo extends AbstractMojo {
      * What hostname name to use?
      *
      * @parameter default-value=""
-     *
      */
     private String hostName;
 
     /**
-     * @parameter expression="${project.groupId}     
+     * @parameter expression="${project.groupId}
      */
     private String basePackage;
 
+    /**
+     * @parameter expression="${project.build.outputDirectory}
+     */
+    private File outputDirectory;
+
     public void execute() throws MojoExecutionException {
 
+        extendRealmClasspath();
+
         try {
-            System.out.println(format("Getting {0} database factory", engine));
+            getLog().info(format("Getting {0} database factory", engine));
 
             DatabaseInitializationManager factory = DatabaseInitializationManagerFactory.getInstance(engine);
 
@@ -126,7 +138,7 @@ public class MigrationMojo extends AbstractMojo {
                 }
 
                 if (processMigrations) {
-                    getLog().info(format("Dropping and recreating {0} database", translatedDatabaseName));
+                    getLog().info(format("Processing migrations for {0}:{1}/{2}", groupId, artifactId, basePackage));
                     database.processMigrations(groupId, artifactId, basePackage);
                 }
 
@@ -138,5 +150,37 @@ public class MigrationMojo extends AbstractMojo {
         } catch (IOException e) {
             throw new MojoExecutionException(e.getMessage());
         }
+    }
+
+    /**
+     * This will prepare the current ClassLoader and add all jars and local
+     * classpaths (e.g. target/classes) needed by the dbng task.
+     *
+     * @throws MojoExecutionException
+     */
+    protected void extendRealmClasspath()
+        throws MojoExecutionException {
+        ClassWorld world = new ClassWorld();
+        ClassRealm realm;
+
+        try {
+            realm = world.newRealm("dbng.maven.plugin", Thread.currentThread().getContextClassLoader());
+        } catch (DuplicateRealmException e) {
+            throw new MojoExecutionException("problem while creating new ClassRealm", e);
+        }
+
+
+        getLog().debug("adding classpathElement " + outputDirectory.getPath());
+        try {
+            // we need to use 3 slashes to prevent windoof from interpreting 'file://D:/path' as server 'D'
+            // we also have to add a trailing slash after directory paths
+            URL url = new URL("file:///" + outputDirectory.getPath() + (outputDirectory.isDirectory() ? "/" : ""));
+            realm.addConstituent(url);
+        } catch (MalformedURLException e) {
+            throw new MojoExecutionException("error in adding the classpath " + outputDirectory, e);
+        }
+
+        // set the new ClassLoader as default for this Thread
+        Thread.currentThread().setContextClassLoader(realm.getClassLoader());
     }
 }

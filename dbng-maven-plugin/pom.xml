@@ -36,5 +36,10 @@
             <artifactId>dbng-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-classworlds</artifactId>
+            <version>1.2-alpha-9</version>
+        </dependency>
     </dependencies>
 </project>
