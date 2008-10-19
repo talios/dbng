@@ -17,7 +17,7 @@ import java.net.MalformedURLException;
  * Creates and migrates a database through a series of sql files, or migration classes
  *
  * @goal migrate
- * @phase test
+ * @phase generate-test-resources
  */
 public class MigrationMojo extends AbstractMojo {
 
