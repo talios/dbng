@@ -4,7 +4,7 @@
     <parent>
         <artifactId>dbng</artifactId>
         <groupId>com.theoryinpractise.dbng</groupId>
-        <version>1.2</version>
+        <version>1.3-SNAPSHOT</version>
     </parent>
     <groupId>com.theoryinpractise.dbng</groupId>
     <artifactId>dbng-maven-plugin</artifactId>

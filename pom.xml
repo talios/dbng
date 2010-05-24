@@ -5,12 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.theoryinpractise.dbng</groupId>
-    <version>1.2</version>
+    <version>1.3-SNAPSHOT</version>
     <artifactId>dbng</artifactId>
     <packaging>pom</packaging>
 
     <scm>
-        <developerConnection>scm:svn:https://dbng.googlecode.com/svn/tags/dbng-1.2</developerConnection>
+        <developerConnection>scm:svn:https://dbng.googlecode.com/svn/trunk</developerConnection>
     </scm>
 
     <modules>
