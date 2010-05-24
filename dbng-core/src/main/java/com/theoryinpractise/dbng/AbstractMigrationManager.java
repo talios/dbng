@@ -18,6 +18,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by IntelliJ IDEA.
@@ -135,6 +137,7 @@ public abstract class AbstractMigrationManager implements MigrationManager {
         StringBuilder buffer = new StringBuilder();
 
         while ((inputLine = in.readLine()) != null) {
+
             if (!inputLine.startsWith("--") && !"".equals(inputLine.trim())) {
 
                 if (buffer.length() == 0) {
@@ -146,7 +149,7 @@ public abstract class AbstractMigrationManager implements MigrationManager {
 
             }
 
-            if (buffer.toString().trim().endsWith(";")) {
+            if (hasMatchingQuotes(buffer) && buffer.toString().trim().endsWith(";")) {
                 runner.run(startingLineNumber, buffer.toString().trim());
                 buffer = new StringBuilder();
             }
@@ -157,6 +160,26 @@ public abstract class AbstractMigrationManager implements MigrationManager {
         in.close();
 
     }
+
+    public boolean hasMatchingQuotes(CharSequence s) {
+        return countQuotes(s) % 2 == 0;
+    }
+
+    public static int countQuotes(CharSequence s) {
+        int count = 0;
+        final Matcher matcher = Pattern.compile("(\\$\\$|'|\")").matcher(s);
+        while (matcher.find()) {
+            count++;
+        }
+        return count;
+    }
+
+    public static void main(String[] args) {
+
+        System.out.println(  countQuotes("Hello $$ world $$"));
+
+    }
+
 
     public void info(String string) {
         LOG.info("    * " + string);

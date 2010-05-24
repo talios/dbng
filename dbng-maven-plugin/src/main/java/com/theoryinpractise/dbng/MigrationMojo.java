@@ -2,6 +2,7 @@ package com.theoryinpractise.dbng;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.log4j.BasicConfigurator;
 import org.codehaus.classworlds.ClassWorld;
 import org.codehaus.classworlds.DuplicateRealmException;
 import org.codehaus.classworlds.ClassRealm;
@@ -12,6 +13,8 @@ import static java.text.MessageFormat.format;
 import java.util.Iterator;
 import java.net.URL;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URI;
 
 /**
  * Creates and migrates a database through a series of sql files, or migration classes
@@ -105,7 +108,7 @@ public class MigrationMojo extends AbstractMojo {
     private String hostName;
 
     /**
-     * @parameter expression="${project.groupId}
+     * @parameter expression="${project.groupId}.*"
      */
     private String basePackage;
 
@@ -115,6 +118,8 @@ public class MigrationMojo extends AbstractMojo {
     private File outputDirectory;
 
     public void execute() throws MojoExecutionException {
+
+        BasicConfigurator.configure();
 
         extendRealmClasspath();
 
