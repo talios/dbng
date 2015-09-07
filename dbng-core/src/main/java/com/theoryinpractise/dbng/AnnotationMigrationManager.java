@@ -10,13 +10,6 @@ import javax.sql.DataSource;
 import java.lang.reflect.Method;
 import java.util.*;
 
-/**
- * Created by IntelliJ IDEA.
- * User: Mark Derricutt
- * Date: 24/03/2007
- * Time: 20:00:29
- * To change this template use File | Settings | File Templates.
- */
 public class AnnotationMigrationManager extends AbstractMigrationManager {
     private static final Logger LOG = Logger.getLogger(AnnotationMigrationManager.class);
 
@@ -128,27 +121,25 @@ public class AnnotationMigrationManager extends AbstractMigrationManager {
         return this;
     }
 
-    /**
-     * checkContiguousMigrations does a simple linear check of migration version numbers to check that the available
-     * migrations don't skip, or duplicate any version numbers.
-     *
-     * @param migrationContainers
-     * @throws MigrationException
-     */
-/*    private void checkContiguousMigrations(Set<MethodMigrationContainer> migrationContainers) throws MigrationException {
-        long currentVersion = getCurrentVersion();
-        System.out.println("checking " + migrationContainers.size() + " migrations");
-        for (MethodMigrationContainer migrationContainer : migrationContainers) {
-            currentVersion += 1;
-            System.out.println(currentVersion + " --- " + migrationContainer.getDataMigration().version());
-            if (currentVersion != migrationContainer.getDataMigration().version()) {
-                throw new MigrationException("Unexpected version number found ("
-                        + migrationContainer.getDataMigration().version() + ") in method "
-                        + migrationContainer.getClazz().getName() + "#" + migrationContainer.getMethod().getName());
-            }
-        }
-    }
-*/
+//    /**
+//     * checkContiguousMigrations does a simple linear check of migration version numbers to check that the available
+//     * migrations don't skip, or duplicate any version numbers.
+//     * @param migrationContainers
+//     * @throws MigrationException
+//     */
+//    private void checkContiguousMigrations(String groupId, String artifactId, Set<MethodMigrationContainer> migrationContainers) throws MigrationException {
+//        String currentVersion = getCurrentVersion(groupId, artifactId);
+//        System.out.println("checking " + migrationContainers.size() + " migrations");
+//        for (MethodMigrationContainer migrationContainer : migrationContainers) {
+//            currentVersion += 1;
+//            System.out.println(currentVersion + " --- " + migrationContainer.getDataMigration().version());
+//            if (currentVersion != migrationContainer.getDataMigration().version()) {
+//                throw new MigrationException("Unexpected version number found ("
+//                        + migrationContainer.getDataMigration().version() + ") in method "
+//                        + migrationContainer.getClazz().getName() + "#" + migrationContainer.getMethod().getName());
+//            }
+//        }
+//    }
 
     public class MethodMigrationContainer {
         private Class clazz;
