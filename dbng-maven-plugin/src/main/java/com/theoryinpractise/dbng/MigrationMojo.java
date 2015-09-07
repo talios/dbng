@@ -1,120 +1,108 @@
 package com.theoryinpractise.dbng;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import org.apache.log4j.BasicConfigurator;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.log4j.BasicConfigurator;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.codehaus.classworlds.ClassRealm;
 import org.codehaus.classworlds.ClassWorld;
 import org.codehaus.classworlds.DuplicateRealmException;
-import org.codehaus.classworlds.ClassRealm;
 
 import java.io.File;
 import java.io.IOException;
-import static java.text.MessageFormat.format;
-import java.util.Iterator;
-import java.net.URL;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URI;
+import java.net.URL;
+import java.util.List;
+
+import static java.text.MessageFormat.format;
 
 /**
  * Creates and migrates a database through a series of sql files, or migration classes
- *
- * @goal migrate
- * @phase process-classes
  */
+@Mojo(name = "migrate", defaultPhase = LifecyclePhase.PROCESS_CLASSES, requiresDependencyResolution = ResolutionScope.COMPILE)
 public class MigrationMojo extends AbstractMojo {
 
     /**
      * The groupId to use for processing migrations, this defaults to the projects groupId
-     *
-     * @parameter expression="${project.groupId}"
-     * @required
      */
+    @Parameter(defaultValue = "${project.groupId}", required = true)
     private String groupId;
 
     /**
      * The artifactId to use for processing migrations, this defaults to the projects artifactId
-     *
-     * @parameter expression="${project.artifactId}"
-     * @required
      */
+    @Parameter(defaultValue = "${project.artifactId}", required = true)
     private String artifactId;
 
     /**
      * The version to use for processing migrations, this defaults to the projects version
-     *
-     * @parameter expression="${project.version}"
-     * @required
      */
+    @Parameter(defaultValue = "${project.version}", required = true)
     private String version;
 
     /**
      * A list of SQL files to execute after creating a fresh database
-     *
-     * @parameter
      */
+    @Parameter
     private File[] files;
 
     /**
-     * Should we execute any migration classes found in the project?
-     *
-     * @parameter default-value="false"
+     * A YAML file containing a list of SQL files to execute after creating a fresh database
      */
+    @Parameter
+    private File manifestFile;
+
+    /**
+     * Should we execute any migration classes found in the project?
+     */
+    @Parameter(defaultValue = "false")
     private boolean processMigrations;
 
     /**
      * Should we drop/create the database whenever we run?
-     *
-     * @parameter default-value="false"
      */
+    @Parameter(defaultValue = "false")
     private boolean createDatabase;
 
     /**
      * What database engine are we using?
-     *
-     * @parameter default-value="pgsql"
      */
+    @Parameter(defaultValue = "pgsql")
     private String engine;
 
     /**
      * What username to use?
-     *
-     * @parameter
-     * @required
      */
+    @Parameter(required = true)
     private String username;
 
     /**
      * What password to use?
-     *
-     * @parameter
-     * @required
      */
+    @Parameter(required = true)
     private String password;
 
     /**
      * What database name to use?
-     *
-     * @parameter expression="${project.artifactId}
-     * @required
      */
+    @Parameter(defaultValue = "${project.artifactId}", required = true)
     private String databaseName;
 
     /**
      * What hostname name to use?
-     *
-     * @parameter default-value=""
      */
+    @Parameter(defaultValue = "")
     private String hostName;
 
-    /**
-     * @parameter expression="${project.groupId}.*"
-     */
+    @Parameter(defaultValue = "${project.groupId}.*")
     private String basePackage;
 
-    /**
-     * @parameter expression="${project.build.outputDirectory}
-     */
+    @Parameter(defaultValue = "${project.build.outputDirectory}")
     private File outputDirectory;
 
     public void execute() throws MojoExecutionException {
@@ -139,6 +127,19 @@ public class MigrationMojo extends AbstractMojo {
                     for (File file : files) {
                         getLog().info(format("Executing {0}", file.getPath()));
                         database.executeSqlFile(file);
+                    }
+                }
+
+                if (manifestFile != null) {
+                    if (manifestFile.exists()) {
+                        getLog().info(format("Loading manifest file {0}", manifestFile.getPath()));
+                        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+                        List<String> files = mapper.readValue(manifestFile, List.class);
+                        for (String fileName : files) {
+                            File file = new File(manifestFile.getParentFile(), fileName);
+                            getLog().info(format("Executing {0}", file.getPath()));
+                            database.executeSqlFile(file);
+                        }
                     }
                 }
 
