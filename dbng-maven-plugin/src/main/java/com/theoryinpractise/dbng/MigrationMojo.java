@@ -140,6 +140,8 @@ public class MigrationMojo extends AbstractMojo {
                             getLog().info(format("Executing {0}", file.getPath()));
                             database.executeSqlFile(file);
                         }
+                    } else {
+                        throw new MigrationException("Manifest file does not exist: " + manifestFile.getPath());
                     }
                 }
 
