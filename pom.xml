@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.theoryinpractise.dbng</groupId>
-  <version>1.5-SNAPSHOT</version>
+  <version>1.5</version>
   <artifactId>dbng</artifactId>
   <packaging>pom</packaging>
   <description>Simple Database Migration Tool</description>
@@ -13,7 +13,7 @@
   <scm>
     <connection>scm:git:https://github.com/talios/dbng.git</connection>
     <developerConnection>scm:git:https://github.com/talios/dbng.git</developerConnection>
-    <tag>HEAD</tag>
+    <tag>dbng-1.5</tag>
   </scm>
 
   <prerequisites>
