@@ -1,52 +1,50 @@
 <?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <parent>
-        <artifactId>dbng</artifactId>
-        <groupId>com.theoryinpractise.dbng</groupId>
-        <version>1.4-SNAPSHOT</version>
-    </parent>
-    <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>dbng</artifactId>
     <groupId>com.theoryinpractise.dbng</groupId>
-    <artifactId>dbng-examples</artifactId>
-    <name>dbng-examples</name>
-    <url>http://maven.apache.org</url>
+    <version>1.5-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.theoryinpractise.dbng</groupId>
+  <artifactId>dbng-examples</artifactId>
+  <name>dbng-examples</name>
+  <url>http://maven.apache.org</url>
 
-	<build>
-	    <plugins>
-    		<plugin>
-    			<groupId>com.theoryinpractise.dbng</groupId>
-  		  		<artifactId>dbng-maven-plugin</artifactId>
-    			<version>1.4-SNAPSHOT</version>
-	  		  	<configuration>
-  			  		<createDatabase>true</createDatabase>
-  			  		<username>postgres</username>
-  			  		<password>8avana</password>
-<!--
-					<files>
-  			  			<file>src/main/resources/test.sql</file>
-  			  		</files>
--->
-  			  	</configuration>
-  		  	</plugin>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>com.theoryinpractise.dbng</groupId>
+        <artifactId>dbng-maven-plugin</artifactId>
+        <version>1.5-SNAPSHOT</version>
+        <configuration>
+          <createDatabase>true</createDatabase>
+          <username>postgres</username>
+          <password>8avana</password>
+          <!--<files>-->
+            <!--<file>src/main/resources/test.sql</file>-->
+          <!--</files>-->
+        </configuration>
+      </plugin>
 
-    	</plugins>
-	</build>
+    </plugins>
+  </build>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.theoryinpractise.dbng</groupId>
-            <artifactId>dbng-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.14</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-jdbc</artifactId>
-            <version>2.0.6</version>
-        </dependency>
-    </dependencies>
+  <dependencies>
+    <dependency>
+      <groupId>com.theoryinpractise.dbng</groupId>
+      <artifactId>dbng-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.17</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-jdbc</artifactId>
+      <version>4.2.1.RELEASE</version>
+    </dependency>
+  </dependencies>
 </project>
