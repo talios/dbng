@@ -115,44 +115,45 @@ public class MigrationMojo extends AbstractMojo {
             getLog().info(format("Getting {0} database factory", engine));
 
             DatabaseInitializationManager factory = DatabaseInitializationManagerFactory.getInstance(engine);
+            String translatedDatabaseName = databaseName.replaceAll("-", "_");
 
+            MigrationManager database;
             if (createDatabase) {
-
-                String translatedDatabaseName = databaseName.replaceAll("-", "_");
                 getLog().info(format("Dropping and recreating {0} database", translatedDatabaseName));
-                MigrationManager database = factory.createDatabase(translatedDatabaseName, hostName, username, password);
+                database = factory.createDatabase(translatedDatabaseName, hostName, username, password);
+            } else {
+                getLog().info("Skipping database creation.");
+                database = factory.openDatabase(translatedDatabaseName, hostName, username, password);
+            }
 
-                if (files != null) {
-                    getLog().info(format("Executing {0} files.", files.length));
-                    for (File file : files) {
+            if (files != null) {
+                getLog().info(format("Executing {0} files.", files.length));
+                for (File file : files) {
+                    getLog().info(format("Executing {0}", file.getPath()));
+                    database.executeSqlFile(file);
+                }
+            }
+
+            if (manifestFile != null) {
+                if (manifestFile.exists()) {
+                    getLog().info(format("Loading manifest file {0}", manifestFile.getPath()));
+                    ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+                    List<String> files = mapper.readValue(manifestFile, List.class);
+                    for (String fileName : files) {
+                        File file = new File(manifestFile.getParentFile(), fileName);
                         getLog().info(format("Executing {0}", file.getPath()));
                         database.executeSqlFile(file);
                     }
+                } else {
+                    throw new MigrationException("Manifest file does not exist: " + manifestFile.getPath());
                 }
-
-                if (manifestFile != null) {
-                    if (manifestFile.exists()) {
-                        getLog().info(format("Loading manifest file {0}", manifestFile.getPath()));
-                        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-                        List<String> files = mapper.readValue(manifestFile, List.class);
-                        for (String fileName : files) {
-                            File file = new File(manifestFile.getParentFile(), fileName);
-                            getLog().info(format("Executing {0}", file.getPath()));
-                            database.executeSqlFile(file);
-                        }
-                    } else {
-                        throw new MigrationException("Manifest file does not exist: " + manifestFile.getPath());
-                    }
-                }
-
-                if (processMigrations) {
-                    getLog().info(format("Processing migrations for {0}:{1}/{2}", groupId, artifactId, basePackage));
-                    database.processMigrations(groupId, artifactId, basePackage);
-                }
-
-            } else {
-                getLog().info("Skipping database creation.");
             }
+
+            if (processMigrations) {
+                getLog().info(format("Processing migrations for {0}:{1}/{2}", groupId, artifactId, basePackage));
+                database.processMigrations(groupId, artifactId, basePackage);
+            }
+
         } catch (MigrationException e) {
             throw new MojoExecutionException(e.getMessage());
         } catch (IOException e) {

@@ -8,13 +8,6 @@ import java.sql.SQLException;
 import java.sql.ResultSet;
 import java.sql.PreparedStatement;
 
-/**
- * Created by IntelliJ IDEA.
- * User: Mark Derricutt
- * Date: 25/03/2007
- * Time: 14:50:53
- * To change this template use File | Settings | File Templates.
- */
 public class PostgresDatabaseInitializationManager implements DatabaseInitializationManager {
     private static final Logger LOG = Logger.getLogger(PostgresDatabaseInitializationManager.class);
 
@@ -23,21 +16,28 @@ public class PostgresDatabaseInitializationManager implements DatabaseInitializa
         return createDatabase(dbname, hostname, null, username, password);
     }
 
+    public MigrationManager openDatabase(String dbname, String hostname, String username, String password) throws MigrationException {
+        return openDatabase(dbname, hostname, null, username, password);
+    }
+
+    public MigrationManager openDatabase(String dbname, String hostname, Integer port, String username, String password) throws MigrationException {
+
+        String driver = "org.postgresql.Driver";
+        String url = resolveBaseJdbcUrl(hostname, port);
+
+        try {
+            return new AnnotationMigrationManager(getConnection(driver, url + dbname, username, password));
+        } catch (ClassNotFoundException e) {
+            throw new MigrationException(e.toString());
+        }
+
+    }
+
     public MigrationManager createDatabase(String dbname, String hostname, Integer port, String username, String password) throws MigrationException {
 
 
         String driver = "org.postgresql.Driver";
-        String url = "jdbc:postgresql:";
-        if (hostname != null && !"".equals(hostname)) {
-            url += "//" + hostname;
-
-            if (port != null) {
-                url += ":" + port;
-            }
-
-            url += "/";
-        }
-
+        String url = resolveBaseJdbcUrl(hostname, port);
 
         try {
             // Create the database and load up default schema
@@ -80,6 +80,20 @@ public class PostgresDatabaseInitializationManager implements DatabaseInitializa
             throw new MigrationException(e.toString());
         }
 
+    }
+
+    private String resolveBaseJdbcUrl(String hostname, Integer port) {
+        String url = "jdbc:postgresql:";
+        if (hostname != null && !"".equals(hostname)) {
+            url += "//" + hostname;
+
+            if (port != null) {
+                url += ":" + port;
+            }
+
+            url += "/";
+        }
+        return url;
     }
 
 
