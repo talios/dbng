@@ -5,13 +5,13 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.theoryinpractise.dbng</groupId>
-  <version>1.4</version>
+  <version>1.5-SNAPSHOT</version>
   <artifactId>dbng</artifactId>
   <packaging>pom</packaging>
 
   <scm>
     <developerConnection>scm:git:https://github.com/talios/dbng.git</developerConnection>
-    <tag>dbng-1.4</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <prerequisites>

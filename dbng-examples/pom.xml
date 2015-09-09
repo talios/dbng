@@ -3,7 +3,7 @@
   <parent>
     <artifactId>dbng</artifactId>
     <groupId>com.theoryinpractise.dbng</groupId>
-    <version>1.4</version>
+    <version>1.5-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.theoryinpractise.dbng</groupId>
@@ -16,7 +16,7 @@
       <plugin>
         <groupId>com.theoryinpractise.dbng</groupId>
         <artifactId>dbng-maven-plugin</artifactId>
-        <version>1.4</version>
+        <version>1.5-SNAPSHOT</version>
         <configuration>
           <createDatabase>true</createDatabase>
           <username>postgres</username>
